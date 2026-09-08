@@ -230,3 +230,46 @@ npm run preview
 - [ ] 改主题色 → 修改 `src/styles/global.css` 中的 `--accent`
 - [ ] 更新关于页 → 修改 `src/pages/about.astro`
 - [ ] 部署 → `git push` 到 GitHub main 分支
+
+---
+
+## 🤖 AI 接手须知
+
+> 以下内容专为 AI 模型/新设备接手时设计，包含项目关键上下文。
+
+### 项目快照
+
+| 项目 | 详情 |
+|---|---|
+| 仓库 | `mousiji/mousiji.github.io` |
+| 线上地址 | https://mousiji.github.io |
+| 框架 | Astro 5 |
+| 部署方式 | GitHub Actions → GitHub Pages（push 到 main 分支自动构建） |
+| 评论系统 | Giscus（GitHub Discussions） |
+
+### 代码改动记录
+
+- **2026-09-08**：从 Gridea 迁移到 Astro，卡片式布局上线
+  - 新增：深色/浅色模式切换
+  - 新增：Giscus 评论区（repo-id: `R_kgDOIrvofQ`, category: `General`, category-id: `DIC_kwDOIrvofc4DFHla`）
+  - 新增：友链系统（`src/content/friends/` 下 JSON 文件）
+  - 新增：标签系统（自动汇总文章标签）
+  - 新增：RSS 订阅
+  - 迁移：保留旧文章《Hello Gridea》和头像
+  - 新增：第一篇迁移记录文章《博客迁移记：从 Gridea 到 Astro》
+
+### 注意事项
+
+- `.astro/` 目录是 Astro 的缓存目录，不要提交到 Git
+- 图片资源放在 `public/images/` 下，引用路径写 `/images/xxx.png`
+- 修改主题色需同时改 `:root`（浅色）和 `[data-theme="dark"]`（深色）两套变量
+- 评论区的深色模式跟随通过 MutationObserver 监听 `data-theme` 属性变化自动同步
+
+### 快速上手命令
+
+```bash
+npm install        # 安装依赖
+npm run dev        # 本地开发 http://localhost:4321
+npm run build      # 构建到 dist/
+npm run preview    # 预览构建结果
+```
