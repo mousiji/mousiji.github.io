@@ -62,6 +62,7 @@ astro-blog/
 │   └── deploy.yml             # GitHub Actions 自动部署配置
 ├── astro.config.mjs           # Astro 配置
 ├── package.json
+├── AGENTS.md                  # 🤖 AI 接手速查（供新设备/AI 快速理解项目）
 └── README.md                  # 本文档 - 项目维护指南
 ```
 
@@ -310,6 +311,10 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-08（第三轮：线上登录）**
+  - 新增：线上 `/admin` 接入 DecapBridge 登录（`public/admin/config.yml` backend 改为 `git-gateway` + PKCE），手机/任何设备可后台发文，无需本地电脑
+  - 新增：`commit_messages`（提交带操作者）、PKCE 用户字段映射
+  - 新增：`AGENTS.md` —— AI/新设备接手的精简速查文件
 - **2026-09-08（第二轮：CMS + 草稿预览）**
   - 新增：Decap CMS 网页后台（`public/admin/`，自托管核心与中文包，不依赖 CDN）
   - 新增：本地 CMS 代理命令 `npm run dev:admin`（并行启动 `astro dev` + `decap-server`）
@@ -334,7 +339,7 @@ npm run preview
 - 评论区的深色模式跟随通过 MutationObserver 监听 `data-theme` 属性变化自动同步
 - `public/admin/decap-cms.js` 是自托管的 CMS 核心文件（约 5MB），**不要删除**；升级 CMS 时用官方构建替换它
 - Decap CMS 的 `local_backend` 依赖 Git 仓库：本地 CMS 会把文章改动写进工作区并可通过 `git push origin main` 发布
-- 线上 `/admin` 若要免本地可用，需额外配置 OAuth 网关（见上文「线上后台」）
+- 线上 `/admin` 已接入 DecapBridge 登录（见上文「线上后台」），本地与线上登录互不影响
 
 ### 快速上手命令
 
