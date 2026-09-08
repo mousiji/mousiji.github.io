@@ -311,6 +311,12 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-08（第四轮：SEO 与搜索引擎收录）**
+  - 新增：`public/robots.txt`（允许抓取 + Sitemap 指向 `sitemap-index.xml`）
+  - 增强：`src/layouts/BaseLayout.astro` 加入 canonical 规范链接、og:site_name/title/url/type/locale、twitter:card；og:image 相对路径自动转绝对 URL（无封面图回退头像）
+  - 增强：每页 title 统一为「xxx | 斯基的个人博客」；文章详情页标记 `og:type="article"`
+  - 新增：Bing Webmaster 验证 meta（`msvalidate.01`），站点已通过验证、sitemap 已提交收录
+  - 提示：若将来绑定自定义域名，GitHub Pages 会自动 301 旧域名，需同步改 `astro.config.mjs` 的 `site` 地址并到搜索后台提交「地址更改」
 - **2026-09-08（第三轮：线上登录）**
   - 新增：线上 `/admin` 接入 DecapBridge 登录（`public/admin/config.yml` backend 改为 `git-gateway` + PKCE），手机/任何设备可后台发文，无需本地电脑
   - 新增：`commit_messages`（提交带操作者）、PKCE 用户字段映射
