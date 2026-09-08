@@ -1,0 +1,69 @@
+# Decap CMS 后台配置
+# 后台地址：/admin/  （本地开发与线上均可用）
+
+backend:
+  name: github
+  repo: mousiji/mousiji.github.io # 你的仓库
+  branch: main # 内容直接提交到 main 分支，触发自动部署
+  # 线上登录（OAuth）配置说明见 README「Decap CMS 后台」章节
+  # 可选：配置第三方 OAuth 网关后在此追加：
+  #   base_url: https://auth.你的网关.com
+  #   auth_endpoint: oauth
+  #   auth_type: pkce        # 使用 PKCE 时
+
+# 本地开发：配合 decap-server 使用，免登录直接读写本地 Git 仓库
+local_backend: true
+
+# 图片上传位置
+media_folder: "public/images"
+public_folder: "/images"
+
+# 站点信息
+site_url: https://mousiji.github.io
+display_url: https://mousiji.github.io
+logo_url: /images/avatar.png
+
+# 界面语言：简体中文（由 index.html 注册 zh_Hans 语言包）
+locale: zh_Hans
+
+collections:
+  # ===== 文章 =====
+  - name: blog
+    label: 📝 文章
+    label_singular: 文章
+    folder: src/content/blog
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    preview_path: "blog/{{slug}}"
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 摘要（卡片上显示）, name: description, widget: text, required: false }
+      - { label: 发布日期, name: pubDate, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: 更新日期（可选）, name: updatedDate, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
+      - { label: 封面图（可选）, name: heroImage, widget: image, required: false, choose_url: true }
+      - label: 标签
+        name: tags
+        widget: list
+        default: []
+        field: { label: 标签, name: tag, widget: string }
+      - { label: 草稿（开启则不发布到线上）, name: draft, widget: boolean, default: false }
+      - { label: 正文（Markdown）, name: body, widget: markdown }
+
+  # ===== 友链 =====
+  - name: friends
+    label: 🤝 友链
+    label_singular: 友链
+    folder: src/content/friends
+    create: true
+    delete: true
+    extension: json
+    format: json
+    slug: "{{slug}}"
+    fields:
+      - { label: 网站名称, name: name, widget: string }
+      - { label: 网址, name: url, widget: string }
+      - { label: 头像链接（可选）, name: avatar, widget: string, required: false }
+      - { label: 一句话描述（可选）, name: description, widget: text, required: false }

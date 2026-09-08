@@ -4,7 +4,7 @@ import Giscus from '../../components/Giscus.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
@@ -17,6 +17,11 @@ const { Content } = await post.render();
 
 <BaseLayout title={post.data.title} description={post.data.description} image={post.data.heroImage}>
   <article class="post-detail">
+    {import.meta.env.DEV && post.data.draft && (
+      <div class="draft-banner">
+        ⚠️ 这是一篇<strong>草稿</strong>，仅本地预览可见。取消 <code>draft: true</code> 后才会发布到线上。
+      </div>
+    )}
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">

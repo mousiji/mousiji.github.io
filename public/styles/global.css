@@ -279,6 +279,34 @@ img {
   font-weight: 500;
 }
 
+.draft-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 10px;
+  background: #ffb020;
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.draft-banner {
+  background: #fff8e6;
+  border: 1px solid #f0c36d;
+  color: #8a6d1a;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+[data-theme="dark"] .draft-banner {
+  background: #3d3320;
+  border-color: #6d5a2c;
+  color: #f0d99a;
+}
+
 .blog-card-title {
   font-size: 20px;
   font-weight: 700;

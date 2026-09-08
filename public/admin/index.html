@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>博客管理后台</title>
+  <script>
+    // 手动初始化：先注册中文界面，再启动 CMS
+    window.CMS_MANUAL_INIT = true;
+  </script>
+  <link rel="cms-config-url" href="/admin/config.yml" />
+</head>
+<body>
+  <script src="/admin/zh_Hans.js"></script>
+  <script src="/admin/decap-cms.js"></script>
+  <script>
+    // 注册简体中文界面
+    window.CMS.registerLocale('zh_Hans', window.zh_Hans);
+    window.initCMS();
+  </script>
+</body>
+</html>

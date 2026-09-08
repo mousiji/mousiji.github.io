@@ -40,12 +40,18 @@ astro-blog/
 │   │   ├── config.ts          # 内容类型定义
 │   │   ├── blog/              # 📝 文章（Markdown）
 │   │   │   ├── hello-gridea.md
-│   │   │   └── migrate-to-astro.md
+│   │   │   ├── migrate-to-astro.md
+│   │   │   └── writing-template.md  # ✍️ 写作模板草稿（draft:true，不发布，可复制改写）
 │   │   └── friends/           # 🤝 友链数据（JSON）
 │   │       └── gridea.json
 │   └── styles/
 │       └── global.css         # 全局样式（含深色/浅色主题）
 ├── public/
+│   ├── admin/                 # 🖥️ Decap CMS 网页后台（本地自托管，不依赖 CDN）
+│   │   ├── index.html           # 后台入口页面
+│   │   ├── config.yml           # 后台配置（集合/字段/后端）
+│   │   ├── decap-cms.js         # Decap CMS 核心（约 5MB 自托管文件）
+│   │   └── zh_Hans.js           # 简体中文界面语言包
 │   ├── images/                # 图片资源
 │   │   ├── avatar.png
 │   │   └── hello-gridea.png
@@ -81,6 +87,53 @@ draft: false                    # true 则不发布
 ```
 
 **添加封面图：** 将图片放到 `public/images/` 目录下，`heroImage` 字段写 `/images/xxx.jpg`。
+
+> ✍️ **写作模板**：仓库里自带一篇草稿 `src/content/blog/writing-template.md`，包含 frontmatter 字段说明 + 常用 Markdown 语法演示。复制该文件改名即可开始写作（本地 `npm run dev` 后访问 `/blog/writing-template/` 可看到渲染效果）。
+
+> 🎨 **草稿机制（draft）**：`draft: true` 的文章只在本地预览出现（卡片带黄色「草稿」角标），**不会**进入线上首页/列表/RSS，也不会生成线上页面。把 `draft` 改为 `false` 或删除该行后才发布。
+
+---
+
+## 🖥️ Decap CMS 网页后台
+
+项目内置 **Decap CMS**（前身 Netlify CMS），可以通过网页可视化编辑文章和友链，改动直接提交到 GitHub 仓库。
+
+### 后台地址
+
+| 环境 | 地址 |
+|---|---|
+| 本地开发 | `http://localhost:4321/admin` |
+| 线上（待配 OAuth，见下） | `https://mousiji.github.io/admin` |
+
+### 本地使用（免登录，推荐日常写作用）
+
+```bash
+npm install          # 首次运行安装依赖
+npm run dev:admin    # 同时启动博客(4321) + CMS 本地代理(8081)
+```
+
+然后浏览器打开 `http://localhost:4321/admin`，即可直接编辑文章/友链——本地代理会把改动写入当前 Git 仓库工作区，**无需登录**。写完 `git push origin main` 即发布。
+
+> 说明：`decap-server`（本地代理）必须在 Git 仓库内运行，这就是本项目 `astro-blog/` 目录本身是 Git 工作副本的原因。
+
+### 文章支持的字段（与后台表单一一对应）
+
+```yaml
+---
+title: "文章标题"
+description: "摘要"
+pubDate: 2026-09-08
+tags: ["标签"]
+heroImage: "/images/xxx.jpg"   # 后台可上传图片
+draft: false                   # 后台有「草稿」开关
+---
+```
+
+后台还提供 **友链** 集合（`src/content/friends/` 下 JSON），可增删改友链卡片。
+
+### 线上后台（需要 OAuth 认证，可选）
+
+线上 `/admin` 使用 GitHub backend，需要在 Decap CMS 文档（[GitHub backend](https://decapcms.org/docs/github-backend/)）指引下配置 OAuth 网关。**如果你主要在本地写作（推荐），可跳过此项。** 若想手机/远程也能后台发文，可在 `public/admin/config.yml` 的 `backend` 段追加第三方 OAuth 网关配置（如自建 serverless OAuth 或 DecapBridge），然后把网关地址填进 `base_url`。
 
 ---
 
@@ -131,8 +184,8 @@ draft: false                    # true 则不发布
 ### 修改首页信息
 
 在 `src/pages/index.astro` 中修改：
-- 标题：`<h1>mousiji</h1>`
-- 座右铭：`<p>温故而知新</p>`
+- 标题：`<h1>斯基</h1>`
+- 签名：`<p>很高兴见到你=w=</p>`
 - 头像：替换 `public/images/avatar.png`
 
 在 `src/pages/about.astro` 中修改关于页面内容。
@@ -249,6 +302,13 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-08（第二轮：CMS + 草稿预览）**
+  - 新增：Decap CMS 网页后台（`public/admin/`，自托管核心与中文包，不依赖 CDN）
+  - 新增：本地 CMS 代理命令 `npm run dev:admin`（并行启动 `astro dev` + `decap-server`）
+  - 新增：草稿本地预览——开发环境显示 `draft: true` 文章（带「草稿」角标与横幅），生产构建自动排除
+  - 新增：写作模板草稿 `src/content/blog/writing-template.md`（frontmatter 说明 + Markdown 语法速查）
+  - 调整：文章 schema 日期字段改用 `z.coerce.date()`，兼容 CMS 写入的字符串日期
+  - 变更：站点名/文案已由线上改为「斯基的个人博客 / 很高兴见到你=w=」
 - **2026-09-08**：从 Gridea 迁移到 Astro，卡片式布局上线
   - 新增：深色/浅色模式切换
   - 新增：Giscus 评论区（repo-id: `R_kgDOIrvofQ`, category: `General`, category-id: `DIC_kwDOIrvofc4DFHla`）
@@ -264,12 +324,16 @@ npm run preview
 - 图片资源放在 `public/images/` 下，引用路径写 `/images/xxx.png`
 - 修改主题色需同时改 `:root`（浅色）和 `[data-theme="dark"]`（深色）两套变量
 - 评论区的深色模式跟随通过 MutationObserver 监听 `data-theme` 属性变化自动同步
+- `public/admin/decap-cms.js` 是自托管的 CMS 核心文件（约 5MB），**不要删除**；升级 CMS 时用官方构建替换它
+- Decap CMS 的 `local_backend` 依赖 Git 仓库：本地 CMS 会把文章改动写进工作区并可通过 `git push origin main` 发布
+- 线上 `/admin` 若要免本地可用，需额外配置 OAuth 网关（见上文「线上后台」）
 
 ### 快速上手命令
 
 ```bash
-npm install        # 安装依赖
-npm run dev        # 本地开发 http://localhost:4321
-npm run build      # 构建到 dist/
-npm run preview    # 预览构建结果
+npm install           # 安装依赖
+npm run dev           # 本地开发 http://localhost:4321（不含 CMS 代理）
+npm run dev:admin     # 本地开发 + CMS 后台代理（http://localhost:4321/admin）
+npm run build         # 构建到 dist/
+npm run preview       # 预览构建结果
 ```

@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
   const tags = new Set();
   for (const post of posts) {
     for (const tag of post.data.tags) {
@@ -47,6 +47,7 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
             )}
             <h3 class="blog-card-title">
               <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+              {import.meta.env.DEV && post.data.draft && <span class="draft-badge">草稿</span>}
             </h3>
             <p class="blog-card-excerpt">{post.data.description || ''}</p>
             <div class="blog-card-meta">
