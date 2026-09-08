@@ -15,7 +15,7 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} image={post.data.heroImage}>
+<BaseLayout title={post.data.title} description={post.data.description} image={post.data.heroImage} pageType="article">
   <article class="post-detail">
     {import.meta.env.DEV && post.data.draft && (
       <div class="draft-banner">

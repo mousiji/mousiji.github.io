@@ -6,9 +6,27 @@ export interface Props {
   title: string;
   description?: string;
   image?: string;
+  pageType?: 'website' | 'article';
 }
 
-const { title, description, image } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  pageType = 'website',
+} = Astro.props;
+
+const SITE_NAME = '斯基的个人博客';
+const SITE_DESC = '很高兴见到你=w= — 斯基的个人博客';
+const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
+const metaDescription = description || SITE_DESC;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonical = canonicalURL.href;
+const ogImage = image
+  ? image.startsWith('http')
+    ? image
+    : new URL(image, Astro.site).href
+  : new URL('/images/avatar.png', Astro.site).href;
 ---
 
 <!DOCTYPE html>
@@ -16,13 +34,22 @@ const { title, description, image } = Astro.props;
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title} | mousiji</title>
-  <meta name="description" content={description || 'mousiji 的个人博客 - 温故而知新'} />
+  <title>{fullTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <link rel="canonical" href={canonical} />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="alternate" type="application/rss+xml" title="mousiji 的博客" href="/rss.xml" />
-  {image && <meta property="og:image" content={image} />}
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description || 'mousiji 的个人博客'} />
+  <link rel="alternate" type="application/rss+xml" title="斯基的博客" href="/rss.xml" />
+  <meta property="og:site_name" content={SITE_NAME} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta property="og:type" content={pageType} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+  <meta name="twitter:image" content={ogImage} />
   <meta name="theme-color" content="#1d9e75" />
   <link rel="stylesheet" href="/styles/global.css">
 </head>

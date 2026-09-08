@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mousiji.github.io/sitemap-index.xml
