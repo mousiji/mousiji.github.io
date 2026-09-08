@@ -100,10 +100,10 @@ draft: false                    # true 则不发布
 
 ### 后台地址
 
-| 环境 | 地址 |
-|---|---|
-| 本地开发 | `http://localhost:4321/admin` |
-| 线上（待配 OAuth，见下） | `https://mousiji.github.io/admin` |
+| 环境 | 地址 | 登录方式 |
+|---|---|---|
+| 本地开发 | `http://localhost:4321/admin` | 免登录，直接编辑本地仓库 |
+| 线上 | `https://mousiji.github.io/admin` | DecapBridge 账号（需受邀/注册） |
 
 ### 本地使用（免登录，推荐日常写作用）
 
@@ -131,9 +131,17 @@ draft: false                   # 后台有「草稿」开关
 
 后台还提供 **友链** 集合（`src/content/friends/` 下 JSON），可增删改友链卡片。
 
-### 线上后台（需要 OAuth 认证，可选）
+### 线上后台（已接入 DecapBridge 登录）
 
-线上 `/admin` 使用 GitHub backend，需要在 Decap CMS 文档（[GitHub backend](https://decapcms.org/docs/github-backend/)）指引下配置 OAuth 网关。**如果你主要在本地写作（推荐），可跳过此项。** 若想手机/远程也能后台发文，可在 `public/admin/config.yml` 的 `backend` 段追加第三方 OAuth 网关配置（如自建 serverless OAuth 或 DecapBridge），然后把网关地址填进 `base_url`。
+线上 `/admin` 通过 **DecapBridge**（托管认证网关）登录，后端为 `git-gateway` + PKCE，手机/任何设备打开 `https://mousiji.github.io/admin` 即可发文，无需本地电脑。配置位于 `public/admin/config.yml` 的 `backend` 段（`base_url` / `auth_endpoint` / `gateway_url` 指向 decapbridge.com）。
+
+- 站点 ID：`128bad09-388e-4892-a189-c4d7f0d20e8b`（在 decapbridge.com 后台可查）
+- 登录入口：DecapBridge 自己的账号体系（支持邮箱密码 / Google / Microsoft），**不是 GitHub 授权页**
+- 每次提交会带上操作者信息（见 `commit_messages`），方便追溯
+- 维护入口：https://decapbridge.com → 该站点 → 可邀请/移除协作者、查看使用情况
+- 若服务不可用/想改回自建 OAuth：替换 `backend` 段为自建网关配置即可（`name: github` + `base_url`）
+
+> 注意：`local_backend: true` 仅在浏览器地址为 `localhost` 时生效（配合 `decap-server` 本地免登录）；线上访问时自动走 DecapBridge 登录，两者互不影响。
 
 ---
 

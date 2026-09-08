@@ -1,17 +1,40 @@
 # Decap CMS 后台配置
 # 后台地址：/admin/  （本地开发与线上均可用）
 
+# ============================================================
+# 线上登录：DecapBridge（托管认证网关）
+# 说明：本地访问 localhost 时自动走本地代理（见下方 local_backend），
+#       线上访问时用 DecapBridge 账号登录并写回 GitHub 仓库。
+# 站点 ID：128bad09-388e-4892-a189-c4d7f0d20e8b（在 decapbridge.com 后台可查）
+# ============================================================
 backend:
-  name: github
-  repo: mousiji/mousiji.github.io # 你的仓库
-  branch: main # 内容直接提交到 main 分支，触发自动部署
-  # 线上登录（OAuth）配置说明见 README「Decap CMS 后台」章节
-  # 可选：配置第三方 OAuth 网关后在此追加：
-  #   base_url: https://auth.你的网关.com
-  #   auth_endpoint: oauth
-  #   auth_type: pkce        # 使用 PKCE 时
+  name: git-gateway
+  repo: mousiji/mousiji.github.io
+  branch: main
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/128bad09-388e-4892-a189-c4d7f0d20e8b/pkce
+  auth_token_endpoint: /sites/128bad09-388e-4892-a189-c4d7f0d20e8b/token
+  gateway_url: https://gateway.decapbridge.com
+
+# 提交信息记录操作者，便于追溯谁改了内容（DecapBridge 推荐）
+commit_messages:
+  create: Create {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge
+  update: Update {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge
+  delete: Delete {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge
+  uploadMedia: Upload "{{path}}" - {{author-name}} <{{author-login}}> via DecapBridge
+  deleteMedia: Delete "{{path}}" - {{author-name}} <{{author-login}}> via DecapBridge
+  openAuthoring: Message {{message}} - {{author-name}} <{{author-login}}> via DecapBridge
+
+# PKCE 用户字段映射（DecapBridge 推荐）
+auth:
+  email_claim: email
+  first_name_claim: first_name
+  last_name_claim: last_name
+  avatar_url_claim: avatar_url
 
 # 本地开发：配合 decap-server 使用，免登录直接读写本地 Git 仓库
+# （仅在浏览器地址为 localhost 时生效，不影响线上登录）
 local_backend: true
 
 # 图片上传位置
