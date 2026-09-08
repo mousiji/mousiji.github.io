@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const tags = new Set();
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      tags.add(tag);
+    }
+  }
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<BaseLayout title={`标签: ${tag}`} description={`标签 ${tag} 下的所有文章`}>
+  <div class="container">
+    <div class="page-header">
+      <h1>🏷️ {tag}</h1>
+      <p>共 {posts.length} 篇</p>
+    </div>
+
+    <div class="blog-grid">
+      {posts.map((post) => (
+        <article class="blog-card">
+          <a href={`/blog/${post.slug}/`}>
+            {post.data.heroImage ? (
+              <img class="blog-card-image" src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+            ) : (
+              <div class="blog-card-image-placeholder">📝</div>
+            )}
+          </a>
+          <div class="blog-card-body">
+            {post.data.tags.length > 0 && (
+              <div class="blog-card-tags">
+                {post.data.tags.slice(0, 3).map((t) => (
+                  <span class="blog-card-tag">{t}</span>
+                ))}
+              </div>
+            )}
+            <h3 class="blog-card-title">
+              <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+            </h3>
+            <p class="blog-card-excerpt">{post.data.description || ''}</p>
+            <div class="blog-card-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

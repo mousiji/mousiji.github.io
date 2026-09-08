@@ -1,0 +1,69 @@
+---
+const currentPage = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="site-brand">
+      <img class="site-avatar" src="/images/avatar.png" alt="mousiji" width="40" height="40" />
+      <span class="site-name">mousiji</span>
+    </a>
+
+    <button class="mobile-nav-toggle" aria-label="菜单" id="navToggle">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="/" class={currentPage === '/' ? 'active' : ''}>首页</a>
+      <a href="/blog" class={currentPage.startsWith('/blog') ? 'active' : ''}>博客</a>
+      <a href="/tags" class={currentPage === '/tags' ? 'active' : ''}>标签</a>
+      <a href="/friends" class={currentPage === '/friends' ? 'active' : ''}>友链</a>
+      <a href="/about" class={currentPage === '/about' ? 'active' : ''}>关于</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+        navLinks.classList.remove('open');
+      }
+    });
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      if (themeIcon) {
+        themeIcon.textContent = next === 'dark' ? '☀️' : '🌙';
+      }
+    });
+
+    // Sync icon on load
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    if (themeIcon) {
+      themeIcon.textContent = current === 'dark' ? '☀️' : '🌙';
+    }
+  }
+</script>

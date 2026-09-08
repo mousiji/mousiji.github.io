@@ -1,0 +1,49 @@
+<section class="comments-section">
+  <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">💬 评论</h2>
+  <div id="giscus"></div>
+</section>
+
+<script>
+  (function() {
+    const initGiscus = () => {
+      if (document.getElementById('giscus-script')) return;
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
+      const script = document.createElement('script');
+      script.id = 'giscus-script';
+      script.src = 'https://giscus.app/client.js';
+      script.setAttribute('data-repo', 'mousiji/mousiji.github.io');
+      script.setAttribute('data-repo-id', 'R_kgDOIrvofQ');
+      script.setAttribute('data-category', 'General');
+      script.setAttribute('data-category-id', 'DIC_kwDOIrvofc4DFHla');
+      script.setAttribute('data-mapping', 'pathname');
+      script.setAttribute('data-strict', '0');
+      script.setAttribute('data-reactions-enabled', '1');
+      script.setAttribute('data-emit-metadata', '0');
+      script.setAttribute('data-input-position', 'bottom');
+      script.setAttribute('data-theme', theme);
+      script.setAttribute('data-lang', 'zh-CN');
+      script.setAttribute('crossorigin', 'anonymous');
+      script.setAttribute('data-loading', 'lazy');
+      script.setAttribute('async', '');
+      document.getElementById('giscus').appendChild(script);
+    };
+
+    if (document.readyState === 'complete') {
+      initGiscus();
+    } else {
+      window.addEventListener('load', initGiscus);
+    }
+
+    // Sync theme when user toggles dark/light mode
+    const observer = new MutationObserver(() => {
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const iframe = document.querySelector('iframe.giscus-frame');
+      if (iframe) {
+        iframe.contentWindow.postMessage({ giscus: { setConfig: { theme } } }, 'https://giscus.app');
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  })();
+</script>

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const friends = await getCollection('friends');
+friends.sort((a, b) => a.data.name.localeCompare(b.data.name, 'zh-CN'));
+---
+
+<BaseLayout title="友链" description="mousiji 的朋友们">
+  <div class="container">
+    <div class="page-header">
+      <h1>🤝 友链</h1>
+      <p>我的朋友和有趣的站点</p>
+    </div>
+
+    {friends.length > 0 ? (
+      <div class="friends-grid">
+        {friends.map((friend) => (
+          <a href={friend.data.url} target="_blank" rel="noopener" class="friend-card">
+            <img class="friend-avatar" src={friend.data.avatar || '/images/avatar.png'} alt={friend.data.name} loading="lazy" />
+            <div class="friend-info">
+              <div class="friend-name">{friend.data.name}</div>
+              {friend.data.description && (
+                <div class="friend-desc">{friend.data.description}</div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>还没有友链，欢迎交换友链 🤝</p>
+        <p style="font-size: 14px; margin-top: 8px;">如需交换友链，请在评论区留言或发邮件</p>
+      </div>
+    )}
+
+    <div style="max-width: 600px; margin: 0 auto; padding: 32px 0 48px;">
+      <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">📎 交换友链</h2>
+      <div style="background: var(--bg-secondary); border-radius: 8px; padding: 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.8;">
+        <p>如果你想和我交换友链，请在博客评论区留言，或发邮件给我，格式如下：</p>
+        <pre style="margin-top: 12px; padding: 12px; background: var(--bg-code); border-radius: 6px; font-size: 13px; overflow-x: auto;">
+网站名称：xxx
+网站地址：https://xxx.com
+网站描述：一句话描述
+头像地址：https://xxx.com/avatar.png（可选）</pre>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

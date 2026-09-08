@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+// Collect all unique tags
+const tagMap = new Map();
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    if (tagMap.has(tag)) {
+      tagMap.get(tag).push(post);
+    } else {
+      tagMap.set(tag, [post]);
+    }
+  }
+}
+const tags = [...tagMap.entries()].sort((a, b) => b[1].length - a[1].length);
+---
+
+<BaseLayout title="标签" description="博客文章标签分类">
+  <div class="container">
+    <div class="page-header">
+      <h1>🏷️ 标签</h1>
+      <p>共 {tags.length} 个标签</p>
+    </div>
+
+    {tags.length > 0 ? (
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 24px 0 48px;">
+        {tags.map(([tag, tagPosts]) => (
+          <a href={`/tags/${encodeURIComponent(tag)}/`} style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--tag-bg);
+            color: var(--tag-color);
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+          ">
+            {tag}
+            <span style="font-size: 12px; opacity: 0.7;">({tagPosts.length})</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>还没有标签</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>
