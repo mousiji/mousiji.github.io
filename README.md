@@ -311,6 +311,9 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-09（第五轮：访问统计 + 关于页联系图标）**
+  - 新增：页脚接入不蒜子（busuanzi）全站统计，显示「本站总访问量 / 访客数」（`src/components/BaseFooter.astro`，脚本异步加载，国内可正常访问；数字加载完成前显示 `…` 占位，服务挂掉也不影响页面）
+  - 新增：「关于」页「📬 联系我呀」区块加入 GitHub（github.com/mousiji）与邮箱（mo.sji@outlook.com）两个圆形图标，点击跳转，悬停变主题绿色（`src/pages/about.astro`，样式 `.contact-icons` / `.contact-icon` 已加在 global.css 末尾并同步两份）
 - **2026-09-08（第四轮：SEO 与搜索引擎收录）**
   - 新增：`public/robots.txt`（允许抓取 + Sitemap 指向 `sitemap-index.xml`）
   - 增强：`src/layouts/BaseLayout.astro` 加入 canonical 规范链接、og:site_name/title/url/type/locale、twitter:card；og:image 相对路径自动转绝对 URL（无封面图回退头像）

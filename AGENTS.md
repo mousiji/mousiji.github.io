@@ -82,6 +82,7 @@ draft: false                    # true=草稿不发布
 - **2026-09-08（第二轮）**：接入 Decap CMS 后台（自托管）+ 草稿本地预览机制 + 写作模板草稿；站点文案定为「斯基 / 很高兴见到你=w=」
 - **2026-09-08（第三轮）**：线上后台接入 DecapBridge 登录（git-gateway/PKCE），`/admin` 可在任意设备登录发文；保留本地免登录模式
 - **2026-09-08（第四轮：SEO）**：加 robots.txt（指向 sitemap）、每页 canonical + OG/twitter 标签、标题统一「斯基的个人博客」、文章页 og:type=article；Bing Webmaster 已验证（meta `msvalidate.01` 在 BaseLayout），sitemap-index.xml 已提交。换域名时靠 GitHub Pages 自动 301，并改 astro.config.mjs 的 `site`
+- **2026-09-09（第五轮：访问统计 + 联系图标）**：页脚接不蒜子全站访问统计（busuanzi，改 `BaseFooter.astro`，公共服务 `https://busuanzi.ibruce.info`，国内可达；数字回填前显示 `…` 占位、不阻塞布局）；「关于」页新增 GitHub / 邮箱圆形图标快捷链接（改 `src/pages/about.astro`，样式 `.contact-icons` 加在 global.css 末尾，两份已同步）
 
 ## 8. 坑与约定
 
