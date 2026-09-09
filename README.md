@@ -311,6 +311,9 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-09（第六轮：文章阅读量）**
+  - 新增：文章详情页日期左侧显示「阅读 xx 次」（`src/pages/blog/[slug].astro` 的 `.post-meta` 里加了 busuanzi 的 `page_pv` 容器）。复用页脚已加载的不蒜子脚本按 URL 自动计数，无需新引脚本；数字加载前显示 `…` 占位
+  - 说明：阅读量只显示在每篇文章自己的页面；首页的卡片列表做不到逐张显示各自阅读量（一次页面加载只统计当前一个 URL）
 - **2026-09-09（第五轮：访问统计 + 关于页联系图标）**
   - 新增：页脚接入不蒜子（busuanzi）全站统计，显示「本站总访问量 / 访客数」（`src/components/BaseFooter.astro`，脚本异步加载，国内可正常访问；数字加载完成前显示 `…` 占位，服务挂掉也不影响页面）
   - 新增：「关于」页「📬 联系我呀」区块加入 GitHub（github.com/mousiji）与邮箱（mo.sji@outlook.com）两个圆形图标，点击跳转，悬停变主题绿色（`src/pages/about.astro`，样式 `.contact-icons` / `.contact-icon` 已加在 global.css 末尾并同步两份）
