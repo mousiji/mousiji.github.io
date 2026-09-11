@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const groups = new Map();
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  if (!groups.has(year)) groups.set(year, []);
+  groups.get(year).push(post);
+}
+const years = [...groups.entries()].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="归档" description="按年份归档的全部文章">
+  <div class="container">
+    <div class="page-header">
+      <h1>🗂 归档</h1>
+      <p>按时间顺序浏览，共 {posts.length} 篇</p>
+    </div>
+
+    {years.length > 0 ? (
+      years.map(([year, list]) => (
+        <section class="archive-year">
+          <h2 class="archive-year-title">
+            {year}
+            <span class="archive-count">{list.length} 篇</span>
+          </h2>
+          <ul class="archive-list">
+            {list.map((post) => (
+              <li class="archive-item">
+                <time class="archive-date" datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+                </time>
+                <a class="archive-link" href={`/blog/${post.slug}/`}>{post.data.title}</a>
+                {import.meta.env.DEV && post.data.draft && <span class="draft-badge">草稿</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    ) : (
+      <div class="empty-state">
+        <p>还没有文章，敬请期待 🚀</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>

@@ -12,7 +12,51 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
+
+const tocItems = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const plainText = (post.body || '').replace(/\s+/g, '');
+const readMinutes = Math.max(1, Math.round(plainText.length / 300));
+
+const allPosts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+const others = allPosts.filter((p) => p.slug !== post.slug);
+const byTag = others
+  .map((p) => ({
+    entry: p,
+    score: p.data.tags.filter((t) => post.data.tags.includes(t)).length,
+  }))
+  .filter((item) => item.score > 0)
+  .sort(
+    (a, b) =>
+      b.score - a.score || b.entry.data.pubDate.getTime() - a.entry.data.pubDate.getTime()
+  )
+  .slice(0, 3);
+
+const hasTagMatch = byTag.length > 0;
+const related = hasTagMatch
+  ? byTag
+  : [...others]
+      .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+      .slice(0, 2)
+      .map((entry) => ({ entry, score: 0 }));
+
+const site = (Astro.site?.href || 'https://mousiji.github.io/').replace(/\/$/, '');
+const postUrl = `${site}/blog/${post.slug}/`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description || '',
+  image: post.data.heroImage ? new URL(post.data.heroImage, Astro.site).href : `${site}/images/avatar.png`,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate || post.data.pubDate).toISOString(),
+  author: { '@type': 'Person', name: 'mousiji', url: 'https://github.com/mousiji' },
+  publisher: { '@type': 'Person', name: 'mousiji' },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+  url: postUrl,
+  inLanguage: 'zh-CN',
+};
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} image={post.data.heroImage} pageType="article">
@@ -30,6 +74,8 @@ const { Content } = await post.render();
         <time datetime={post.data.pubDate.toISOString()}>
           {post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
         </time>
+        <span>·</span>
+        <span title="按正文字数粗略估算">约 {readMinutes} 分钟</span>
         {post.data.updatedDate && (
           <>
             <span>·</span>
@@ -51,10 +97,41 @@ const { Content } = await post.render();
       <img class="post-hero-image" src={post.data.heroImage} alt={post.data.title} loading="lazy" />
     )}
 
-    <div class="post-content">
+    {tocItems.length > 2 && (
+      <nav class="post-toc" aria-label="文章目录">
+        <details open>
+          <summary>📑 目录</summary>
+          <ol class="post-toc-list">
+            {tocItems.map((h) => (
+              <li class={`post-toc-item post-toc-depth-${h.depth}`}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      </nav>
+    )}
+
+    <div class="post-content" data-pagefind-body data-pagefind-meta={`title:${post.data.title}`}>
       <Content />
     </div>
 
+    {related.length > 0 && (
+      <section class="related-posts">
+        <h2 class="related-title">{hasTagMatch ? '📚 相关文章' : '📖 继续阅读'}</h2>
+        <div class="related-grid">
+          {related.map(({ entry }) => (
+            <a class="related-card" href={`/blog/${entry.slug}/`}>
+              <span class="related-card-title">{entry.data.title}</span>
+              <span class="related-card-desc">{entry.data.description || ''}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
     <Giscus />
   </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </BaseLayout>

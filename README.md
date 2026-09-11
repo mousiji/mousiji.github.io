@@ -311,6 +311,13 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-11（第七轮：阅读体验 / 内容组织 / 收录，共 9 项）**
+  - 站内搜索：接入 `pagefind`（构建时生成本地索引，不依赖第三方服务），新增 `/search` 搜索页，导航加放大镜图标入口；索引只收文章正文（`.post-content` 加 `data-pagefind-body`）
+  - 文章页增强：目录 TOC（可折叠，≥3 个标题才显示）、阅读时间（「约 x 分钟」）、相关文章推荐（按标签重合度，无重合则推荐最新）、`BlogPosting` 结构化数据
+  - 全站：右下角返回顶部按钮、`WebSite` 结构化数据、百度站长验证 meta 预留位
+  - 内容组织：新增 `/archive` 归档页（按年分组）；博客列表支持分页（`blog/[...page].astro`）
+  - 收录：接入 IndexNow（`scripts/indexnow.mjs` + 根目录校验文件），GitHub Actions 部署后自动向必应提交 sitemap 里的 URL，新文章收录更快
+  - 注意：IndexNow 提交 job 在 `.github/workflows/deploy.yml`，若推送时提示无 workflow 权限，需在 GitHub 网页端手动补这个 job
 - **2026-09-09（第六轮：文章阅读量）**
   - 新增：文章详情页日期左侧显示「阅读 xx 次」（`src/pages/blog/[slug].astro` 的 `.post-meta` 里加了 busuanzi 的 `page_pv` 容器）。复用页脚已加载的不蒜子脚本按 URL 自动计数，无需新引脚本；数字加载前显示 `…` 占位
   - 说明：阅读量只显示在每篇文章自己的页面；首页的卡片列表做不到逐张显示各自阅读量（一次页面加载只统计当前一个 URL）

@@ -84,6 +84,14 @@ draft: false                    # true=草稿不发布
 - **2026-09-08（第四轮：SEO）**：加 robots.txt（指向 sitemap）、每页 canonical + OG/twitter 标签、标题统一「斯基的个人博客」、文章页 og:type=article；Bing Webmaster 已验证（meta `msvalidate.01` 在 BaseLayout），sitemap-index.xml 已提交。换域名时靠 GitHub Pages 自动 301，并改 astro.config.mjs 的 `site`
 - **2026-09-09（第五轮：访问统计 + 联系图标）**：页脚接不蒜子全站访问统计（busuanzi，改 `BaseFooter.astro`，公共服务 `https://busuanzi.ibruce.info`，国内可达；数字回填前显示 `…` 占位、不阻塞布局）；「关于」页新增 GitHub / 邮箱圆形图标快捷链接（改 `src/pages/about.astro`，样式 `.contact-icons` 加在 global.css 末尾，两份已同步）
 - **2026-09-09（第六轮：文章阅读量）**：文章详情页 `post-meta` 增加「阅读 … 次」（busuanzi `page_pv`，改 `src/pages/blog/[slug].astro`，复用页脚已加载的脚本，无需新增 script；仅文章页显示，首页卡片因单页加载只取到当前路径、无法逐篇显示）
+- **2026-09-11（第七轮：阅读体验 / 内容组织 / 收录，共 9 项）**：
+  - **站内搜索**：`pagefind`（devDep）+ `pagefind.yml`；`build` 脚本改为 `astro build && pagefind --site dist`；新增 `src/pages/search.astro`（PagefindUI + 中文界面），导航加放大镜图标入口。索引只收正文——文章页 `.post-content` 加了 `data-pagefind-body`，故只索引 2 篇文章（不含导航/页脚噪声）
+  - **文章页增强**（`src/pages/blog/[slug].astro`）：① 目录 TOC（`headings` 里 depth 2/3，≥3 条才显示，`<details>` 可折叠）；② 阅读时间（按正文字数 /300 估算「约 x 分钟」）；③ 相关文章（按标签重合度排序，无重合则兜底推荐最新，标题在「📚 相关文章 / 📖 继续阅读」间切换）；④ `BlogPosting` JSON-LD
+  - **全站**（`src/layouts/BaseLayout.astro`）：右下角返回顶部按钮（滚动 >320px 出现，平滑滚动）；`WebSite` JSON-LD；百度站长验证 meta 预留注释位
+  - **归档页**：新增 `src/pages/archive.astro`（按年分组列出全部文章），导航加「归档」入口
+  - **列表分页**：`src/pages/blog/index.astro` 删除，改为 `src/pages/blog/[...page].astro`（每页固定条数，当前文章少只有第 1 页）
+  - **IndexNow**：`public/07fa94bbf68e17d1cef47d801f1f1c66.txt`（校验 key）+ `scripts/indexnow.mjs`（从 sitemap 读取 URL 后 POST 提交）；`deploy.yml` 新增 `indexnow` job（`needs: deploy`），部署后自动通知必应。⚠️ 该 job 依赖 workflow 写权限，若推送被拒需在 GitHub 网页端补
+  - **样式**：TOC / 相关文章 / 分页 / 归档 / 返回顶部 / 搜索页 / Pagefind 主题变量全部加在 `src/styles/global.css` 末尾，两份已同步
 
 ## 8. 坑与约定
 

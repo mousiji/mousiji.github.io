@@ -2,20 +2,27 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
-posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+export async function getStaticPaths({ paginate }) {
+  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+  posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  return paginate(posts, { pageSize: 6 });
+}
+
+const { page } = Astro.props;
 ---
 
 <BaseLayout title="博客" description="mousiji 的所有博客文章">
   <div class="container">
     <div class="page-header">
       <h1>📝 所有文章</h1>
-      <p>共 {posts.length} 篇</p>
+      <p>
+        共 {page.total} 篇{page.lastPage > 1 ? ` · 第 ${page.currentPage} / ${page.lastPage} 页` : ''}
+      </p>
     </div>
 
-    {posts.length > 0 ? (
+    {page.data.length > 0 ? (
       <div class="blog-grid">
-        {posts.map((post) => (
+        {page.data.map((post) => (
           <article class="blog-card">
             <a href={`/blog/${post.slug}/`}>
               {post.data.heroImage ? (
@@ -50,6 +57,22 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
       <div class="empty-state">
         <p>还没有文章，敬请期待 🚀</p>
       </div>
+    )}
+
+    {page.lastPage > 1 && (
+      <nav class="pagination" aria-label="分页导航">
+        {page.url.prev ? (
+          <a class="page-link" href={page.url.prev}>← 上一页</a>
+        ) : (
+          <span class="page-link page-link-disabled">← 上一页</span>
+        )}
+        <span class="page-info">第 {page.currentPage} / {page.lastPage} 页</span>
+        {page.url.next ? (
+          <a class="page-link" href={page.url.next}>下一页 →</a>
+        ) : (
+          <span class="page-link page-link-disabled">下一页 →</span>
+        )}
+      </nav>
     )}
   </div>
 </BaseLayout>

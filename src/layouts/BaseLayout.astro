@@ -27,6 +27,21 @@ const ogImage = image
     ? image
     : new URL(image, Astro.site).href
   : new URL('/images/avatar.png', Astro.site).href;
+
+const siteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  description: SITE_DESC,
+  url: new URL('/', Astro.site).href,
+  inLanguage: 'zh-CN',
+  author: {
+    '@type': 'Person',
+    name: 'mousiji',
+    url: 'https://github.com/mousiji',
+    email: 'mo.sji@outlook.com',
+  },
+};
 ---
 
 <!DOCTYPE html>
@@ -52,7 +67,10 @@ const ogImage = image
   <meta name="twitter:image" content={ogImage} />
   <meta name="theme-color" content="#1d9e75" />
   <meta name="msvalidate.01" content="C68E8D871A6F3FE5E7CCFD6754503D84" />
+  <!-- 百度站长验证：在百度站长平台（ziyuan.baidu.com）添加本站后，把拿到的 verification meta 粘贴到下面这行 -->
+  <!-- <meta name="baidu-site-verification" content="替换为你的验证码" /> -->
   <link rel="stylesheet" href="/styles/global.css">
+  <script type="application/ld+json" set:html={JSON.stringify(siteJsonLd)} />
 </head>
 <body>
   <BaseHeader />
@@ -60,6 +78,26 @@ const ogImage = image
     <slot />
   </main>
   <BaseFooter />
+  <button id="backToTop" class="back-to-top" aria-label="返回顶部" title="返回顶部">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+  </button>
+  <script>
+    (function () {
+      const btn = document.getElementById('backToTop');
+      if (!btn) return;
+      const onScroll = function () {
+        if (window.scrollY > 320) btn.classList.add('show');
+        else btn.classList.remove('show');
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+      btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
   <script>
     (function() {
       const stored = localStorage.getItem('theme');
