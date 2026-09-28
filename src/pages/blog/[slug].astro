@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Giscus from '../../components/Giscus.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+  const posts = await getPublishedPosts();
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
@@ -19,7 +19,7 @@ const tocItems = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const plainText = (post.body || '').replace(/\s+/g, '');
 const readMinutes = Math.max(1, Math.round(plainText.length / 300));
 
-const allPosts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+const allPosts = await getPublishedPosts();
 const others = allPosts.filter((p) => p.slug !== post.slug);
 const byTag = others
   .map((p) => ({
@@ -94,7 +94,7 @@ const jsonLd = {
     </header>
 
     {post.data.heroImage && (
-      <img class="post-hero-image" src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+      <img class="post-hero-image" src={post.data.heroImage} alt={post.data.title} width="1200" height="630" loading="lazy" />
     )}
 
     {tocItems.length > 2 && (

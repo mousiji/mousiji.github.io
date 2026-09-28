@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../lib/posts';
 
-const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+const posts = await getPublishedPosts();
 
 // Collect all unique tags
 const tagMap = new Map();

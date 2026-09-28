@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+  const posts = await getPublishedPosts();
   const tags = new Set();
   for (const post of posts) {
     for (const tag of post.data.tags) {
@@ -32,7 +32,7 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
         <article class="blog-card">
           <a href={`/blog/${post.slug}/`}>
             {post.data.heroImage ? (
-              <img class="blog-card-image" src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+              <img class="blog-card-image" src={post.data.heroImage} alt={post.data.title} width="400" height="200" loading="lazy" />
             ) : (
               <div class="blog-card-image-placeholder">📝</div>
             )}

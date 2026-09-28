@@ -92,6 +92,7 @@ draft: false                    # true=草稿不发布
   - **列表分页**：`src/pages/blog/index.astro` 删除，改为 `src/pages/blog/[...page].astro`（每页固定条数，当前文章少只有第 1 页）
   - **IndexNow**：`public/07fa94bbf68e17d1cef47d801f1f1c66.txt`（校验 key）+ `scripts/indexnow.mjs`（从 sitemap 读取 URL 后 POST 提交）；`deploy.yml` 新增 `indexnow` job（`needs: deploy`），部署后自动通知必应。⚠️ 该 job 依赖 workflow 写权限，若推送被拒需在 GitHub 网页端补
   - **样式**：TOC / 相关文章 / 分页 / 归档 / 返回顶部 / 搜索页 / Pagefind 主题变量全部加在 `src/styles/global.css` 末尾，两份已同步
+- **2026-09-28（第八轮：代码健壮性，共 4 项）**：① 深色首屏白闪修复——主题初始化脚本从 body 末尾移入 `<head>`（渲染前执行），`theme-color` 随主题自动同步（MutationObserver 监听 `data-theme`，浅 `#ffffff` / 深 `#0f0f1a`）；② 草稿过滤收口到 `src/lib/posts.ts` 的 `getPublishedPosts()`（替换 7 个文件 8 处，内置按 pubDate 倒序）——**改草稿规则只改这一个文件**；③ 删除误上传的套娃目录 `public/images/public/`；④ 卡片图/头图补 `width`/`height` 减少布局跳动
 
 ## 8. 坑与约定
 

@@ -1,9 +1,8 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../lib/posts';
 
 export async function GET(context) {
-  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
-  posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  const posts = await getPublishedPosts();
 
   return rss({
     title: 'mousiji 的博客',

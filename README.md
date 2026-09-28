@@ -311,6 +311,11 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-28（第八轮：代码健壮性，共 4 项）**
+  - 修复深色模式首屏白闪：主题初始化脚本从 `body` 末尾移入 `<head>`（渲染前执行，深色用户不再先看到白屏）；`theme-color`（手机地址栏颜色）改为跟随主题自动同步（MutationObserver 监听 `data-theme`，浅色 `#ffffff` / 深色 `#0f0f1a`）
+  - 草稿过滤收口：新增 `src/lib/posts.ts` 的 `getPublishedPosts()`（内置按发布日期倒序），替换原来散在 7 个文件里的 8 处 `import.meta.env.DEV || !data.draft`；**以后改草稿规则只改这一个文件**
+  - 清理误上传的套娃目录 `public/images/public/`（CMS 传图路径写错产生）
+  - 文章卡片图与头图补 `width`/`height` 属性，减少图片加载前后的布局跳动
 - **2026-09-11（第七轮：阅读体验 / 内容组织 / 收录，共 9 项）**
   - 站内搜索：接入 `pagefind`（构建时生成本地索引，不依赖第三方服务），新增 `/search` 搜索页，导航加放大镜图标入口；索引只收文章正文（`.post-content` 加 `data-pagefind-body`）
   - 文章页增强：目录 TOC（可折叠，≥3 个标题才显示）、阅读时间（「约 x 分钟」）、相关文章推荐（按标签重合度，无重合则推荐最新）、`BlogPosting` 结构化数据
