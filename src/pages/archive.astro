@@ -4,11 +4,12 @@ import { getPublishedPosts } from '../lib/posts';
 
 const posts = await getPublishedPosts();
 
-const groups = new Map();
+const groups = new Map<number, typeof posts>();
 for (const post of posts) {
   const year = post.data.pubDate.getFullYear();
-  if (!groups.has(year)) groups.set(year, []);
-  groups.get(year).push(post);
+  const list = groups.get(year);
+  if (list) list.push(post);
+  else groups.set(year, [post]);
 }
 const years = [...groups.entries()].sort((a, b) => b[0] - a[0]);
 ---

@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const zones = [
+  { tz: 'Asia/Shanghai', city: '北京 · 上海', label: '北京时间' },
+  { tz: 'Asia/Tokyo', city: '东京', label: '东京时间' },
+  { tz: 'Australia/Sydney', city: '悉尼', label: '悉尼时间' },
+  { tz: 'Europe/London', city: '伦敦', label: '伦敦时间' },
+  { tz: 'America/New_York', city: '纽约', label: '纽约时间' },
+  { tz: 'America/Los_Angeles', city: '洛杉矶', label: '洛杉矶时间' },
+];
+---
+
+<BaseLayout title="时区速查" description="北京时间与全球主要市场当地时间对照，自动判断对方是否在工作时间">
+  <div class="container">
+    <div class="page-header">
+      <h1>🌍 时区速查</h1>
+      <p>每秒自动刷新 · 🟢 当地工作时间（9:00–18:00）｜🌙 休息时间</p>
+    </div>
+
+    <div class="tz-grid" data-pagefind-body>
+      {zones.map((z) => (
+        <div class="tz-card" data-tz={z.tz} data-label={z.label}>
+          <div class="tz-city">{z.city}</div>
+          <div class="tz-time">--:--:--</div>
+          <div class="tz-date">加载中…</div>
+          <span class="tz-badge">…</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const cards = document.querySelectorAll<HTMLElement>('.tz-card');
+  const fmtCache = new Map<string, Intl.DateTimeFormat>();
+
+  function fmt(tz: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+    const key = tz + JSON.stringify(options);
+    let f = fmtCache.get(key);
+    if (!f) {
+      f = new Intl.DateTimeFormat('zh-CN', { timeZone: tz, ...options });
+      fmtCache.set(key, f);
+    }
+    return f;
+  }
+
+  function tick() {
+    const now = new Date();
+    cards.forEach((card) => {
+      const tz = card.dataset.tz;
+      if (!tz) return;
+
+      const time = fmt(tz, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now);
+      const date = fmt(tz, { month: 'long', day: 'numeric', weekday: 'long' }).format(now);
+      const hour = Number(fmt(tz, { hour: 'numeric', hourCycle: 'h23' }).format(now));
+
+      const timeEl = card.querySelector('.tz-time');
+      const dateEl = card.querySelector('.tz-date');
+      const badge = card.querySelector('.tz-badge');
+      if (timeEl) timeEl.textContent = time;
+      if (dateEl) dateEl.textContent = date;
+      if (badge) {
+        const working = hour >= 9 && hour < 18;
+        badge.textContent = working ? '🟢 工作时间' : '🌙 休息时间';
+        badge.classList.toggle('work', working);
+      }
+    });
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>

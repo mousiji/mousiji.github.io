@@ -18,6 +18,7 @@
 npm install           # 安装依赖（node_modules 不入库）
 npm run dev           # 本地开发 http://localhost:4321
 npm run dev:admin     # 本地开发 + Decap CMS 后台代理（http://localhost:4321/admin）
+npm run check         # 类型检查（CI 构建前同样会跑）
 npm run build         # 构建到 dist/（产物不入库）
 npm run preview       # 预览构建结果
 ```
@@ -52,7 +53,7 @@ draft: false                    # true=草稿不发布
 | 首页标题「斯基」/ 签名「很高兴见到你=w=」 | `src/pages/index.astro` |
 | 关于页 | `src/pages/about.astro` |
 | 头像 | 替换 `public/images/avatar.png` |
-| 主题色 | `public/styles/global.css` 与 `src/styles/global.css`（**两份需同步修改**，页面实际引用 `/styles/global.css` 即 public 那份） |
+| 主题色 | `src/styles/global.css`（**唯一一份**；2026-09-28 第九轮已删 `public/styles/global.css`，由 BaseLayout import 打包） |
 | 友链 | `src/content/friends/` 下加/改 JSON |
 | 评论 | `src/components/Giscus.astro`（repo-id `R_kgDOIrvofQ`，category `General`） |
 | 站点 URL/RSS | `astro.config.mjs`、`src/pages/rss.xml.ts` |
@@ -93,11 +94,12 @@ draft: false                    # true=草稿不发布
   - **IndexNow**：`public/07fa94bbf68e17d1cef47d801f1f1c66.txt`（校验 key）+ `scripts/indexnow.mjs`（从 sitemap 读取 URL 后 POST 提交）；`deploy.yml` 新增 `indexnow` job（`needs: deploy`），部署后自动通知必应。⚠️ 该 job 依赖 workflow 写权限，若推送被拒需在 GitHub 网页端补
   - **样式**：TOC / 相关文章 / 分页 / 归档 / 返回顶部 / 搜索页 / Pagefind 主题变量全部加在 `src/styles/global.css` 末尾，两份已同步
 - **2026-09-28（第八轮：代码健壮性，共 4 项）**：① 深色首屏白闪修复——主题初始化脚本从 body 末尾移入 `<head>`（渲染前执行），`theme-color` 随主题自动同步（MutationObserver 监听 `data-theme`，浅 `#ffffff` / 深 `#0f0f1a`）；② 草稿过滤收口到 `src/lib/posts.ts` 的 `getPublishedPosts()`（替换 7 个文件 8 处，内置按 pubDate 倒序）——**改草稿规则只改这一个文件**；③ 删除误上传的套娃目录 `public/images/public/`；④ 卡片图/头图补 `width`/`height` 减少布局跳动
+- **2026-09-28（第九轮：工具区 + 结构优化，共 6 项）**：① 新增 `/tools` 工具区——列表页 + 注册表 `src/lib/tools.ts`（新工具=注册表加一条+建一个 `src/pages/tools/<slug>.astro`）+ 首个工具「时区速查」`/tools/timezones/`（六大市场时间每秒刷新、标注工作/休息，已进 sitemap 与站内搜索）；② 导航加工具入口 + RSS 图标；③ **CSS 合并为一份**：删 `public/styles/global.css`，BaseLayout 改 `import '../styles/global.css'`（构建产 `/_assets/*.css`）——改样式只改 `src/styles/global.css`；④ **CI 类型检查**：`deploy.yml` 构建前跑 `npm run check`（astro check），修光暴露的 23 个类型错误；`tsconfig.json` 补 `exclude: ["dist","node_modules","public"]`（Astro 基础配置只排 dist，配合 allowJs 会把整个 node_modules 拉进检查 → 内存爆炸 OOM，这是坑）；⑤ Node 版本统一：`.nvmrc`(24) + CI `node-version-file` + `engines >=22`；⑥ 新增 `npm run check` 脚本与 devDeps `@astrojs/check`、`typescript`
 
 ## 8. 坑与约定
 
 - `.astro/`、`node_modules/`、`dist/` 不入库
 - 图片引用写绝对路径 `/images/xxx.png`，文件放 `public/images/`
-- `public/styles/global.css` 与 `src/styles/global.css` 内容相同，**改 CSS 必须同步两份**（src 那份是历史遗留，仍被部分引用场景使用；实际线上生效的是 public 那份，改错会导致样式不生效或后台样式错乱）
+- 样式只有一份：`src/styles/global.css`（第九轮已删 `public/styles/global.css`，由 BaseLayout import，构建产出 `/_assets/*.css`）——**不要再找第二份、不存在同步问题**
 - 深色模式评论跟随：Giscus 用 MutationObserver 监听 `data-theme` 自动同步，勿破坏
 - 用户（博主）编程基础较弱：解释性回复要通俗；涉及外部账号/生产发布的操作先说明再做

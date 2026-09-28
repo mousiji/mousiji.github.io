@@ -27,7 +27,8 @@
       script.setAttribute('crossorigin', 'anonymous');
       script.setAttribute('data-loading', 'lazy');
       script.setAttribute('async', '');
-      document.getElementById('giscus').appendChild(script);
+      const mount = document.getElementById('giscus');
+      if (mount) mount.appendChild(script);
     };
 
     if (document.readyState === 'complete') {
@@ -39,9 +40,9 @@
     // Sync theme when user toggles dark/light mode
     const observer = new MutationObserver(() => {
       const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      const iframe = document.querySelector('iframe.giscus-frame');
+      const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
       if (iframe) {
-        iframe.contentWindow.postMessage({ giscus: { setConfig: { theme } } }, 'https://giscus.app');
+        iframe.contentWindow?.postMessage({ giscus: { setConfig: { theme } } }, 'https://giscus.app');
       }
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

@@ -35,7 +35,13 @@ astro-blog/
 │   │   ├── tags/
 │   │   │   ├── index.astro    # 标签总览页
 │   │   │   └── [tag].astro    # 标签筛选页
+│   │   ├── tools/
+│   │   │   ├── index.astro    # 🧰 工具列表页
+│   │   │   └── timezones.astro # 🌍 时区速查
 │   │   └── rss.xml.ts         # RSS 订阅
+│   ├── lib/                   # 公共函数
+│   │   ├── posts.ts             # 文章查询（草稿过滤的唯一出处）
+│   │   └── tools.ts             # 工具区注册表（新工具在这里登记）
 │   ├── content/
 │   │   ├── config.ts          # 内容类型定义
 │   │   ├── blog/              # 📝 文章（Markdown）
@@ -45,7 +51,7 @@ astro-blog/
 │   │   └── friends/           # 🤝 友链数据（JSON）
 │   │       └── gridea.json
 │   └── styles/
-│       └── global.css         # 全局样式（含深色/浅色主题）
+│       └── global.css         # 全局样式（唯一一份，含深色/浅色主题）
 ├── public/
 │   ├── admin/                 # 🖥️ Decap CMS 网页后台（本地自托管，不依赖 CDN）
 │   │   ├── index.html           # 后台入口页面
@@ -55,12 +61,11 @@ astro-blog/
 │   ├── images/                # 图片资源
 │   │   ├── avatar.png
 │   │   └── hello-gridea.png
-│   ├── styles/
-│   │   └── global.css
 │   └── favicon.ico
 ├── .github/workflows/
-│   └── deploy.yml             # GitHub Actions 自动部署配置
+│   └── deploy.yml             # GitHub Actions 自动部署配置（含类型检查）
 ├── astro.config.mjs           # Astro 配置
+├── .nvmrc                     # Node 版本（本地与 CI 统一读它）
 ├── package.json
 ├── AGENTS.md                  # 🤖 AI 接手速查（供新设备/AI 快速理解项目）
 └── README.md                  # 本文档 - 项目维护指南
@@ -311,6 +316,13 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-28（第九轮：工具区 + 结构优化，共 6 项）**
+  - 新增 `/tools` 实用工具区：列表页 `/tools/` + 注册表 `src/lib/tools.ts`（**新工具 = 注册表加一条 + 建一个 `src/pages/tools/<slug>.astro`**）+ 首个工具「时区速查」`/tools/timezones/`（六大市场时间每秒刷新、自动标注工作/休息时间；已进 sitemap 和站内搜索）
+  - 导航新增「工具」入口与 RSS 订阅图标
+  - **CSS 合并为一份**：删除 `public/styles/global.css`，`BaseLayout` 改为 `import '../styles/global.css'`（Astro 打包为带哈希的 `/_assets/*.css`）——**改样式只改 `src/styles/global.css` 一个文件**
+  - **CI 加类型检查**：`deploy.yml` 在构建前跑 `npm run check`（astro check），新增 devDeps `@astrojs/check` + `typescript`；修光它暴露的 23 个类型错误；`tsconfig.json` 补回 `exclude: ["dist","node_modules","public"]`（Astro 基础配置只排了 dist，配合 `allowJs` 会把整个 node_modules 拉进检查导致内存爆炸）
+  - **Node 版本统一**：新增 `.nvmrc`（24），CI 改用 `node-version-file: .nvmrc`（本地与 CI 永不脱节），`package.json` 加 `engines: { "node": ">=22" }`
+  - 新增脚本 `npm run check`（本地随时跑，CI 每次推送也跑）
 - **2026-09-28（第八轮：代码健壮性，共 4 项）**
   - 修复深色模式首屏白闪：主题初始化脚本从 `body` 末尾移入 `<head>`（渲染前执行，深色用户不再先看到白屏）；`theme-color`（手机地址栏颜色）改为跟随主题自动同步（MutationObserver 监听 `data-theme`，浅色 `#ffffff` / 深色 `#0f0f1a`）
   - 草稿过滤收口：新增 `src/lib/posts.ts` 的 `getPublishedPosts()`（内置按发布日期倒序），替换原来散在 7 个文件里的 8 处 `import.meta.env.DEV || !data.draft`；**以后改草稿规则只改这一个文件**

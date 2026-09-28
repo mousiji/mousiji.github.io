@@ -7,9 +7,13 @@
     "dev:admin": "npm-run-all --parallel dev admin-proxy",
     "admin-proxy": "decap-server",
     "build": "astro build && pagefind --site dist",
+    "check": "astro check",
     "search:index": "pagefind --site dist",
     "indexnow": "node scripts/indexnow.mjs",
     "preview": "astro preview"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
@@ -18,8 +22,10 @@
     "astro": "^5.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "decap-server": "^3.11.0",
     "npm-run-all": "^4.1.5",
-    "pagefind": "^1.5.2"
+    "pagefind": "^1.5.2",
+    "typescript": "^5.9.3"
   }
 }

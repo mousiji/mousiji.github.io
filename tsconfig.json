@@ -5,5 +5,7 @@
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  // Astro 基础配置只 exclude 了 dist，配合 allowJs 会连 node_modules/public 一起检查导致内存爆炸，这里补回排除项
+  "exclude": ["dist", "node_modules", "public"]
 }
