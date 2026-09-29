@@ -6,7 +6,7 @@
 
 ## 快速导航
 
-- 线上地址：https://mousiji.github.io
+- 主站地址：https://moskie.vip（自有服务器）｜ 灾备：https://mousiji.github.io（GitHub Pages）
 - 技术栈：Astro 5 + TypeScript + CSS
 - 评论系统：Giscus（基于 GitHub Discussions）
 - 部署方式：GitHub Actions 自动部署
@@ -310,13 +310,17 @@ npm run preview
 | 项目 | 详情 |
 |---|---|
 | 仓库 | `mousiji/mousiji.github.io` |
-| 线上地址 | https://mousiji.github.io |
+| 线上地址 | 主站 https://moskie.vip ｜ 灾备 https://mousiji.github.io |
 | 框架 | Astro 5 |
 | 部署方式 | GitHub Actions → GitHub Pages（push 到 main 分支自动构建） |
 | 评论系统 | Giscus（GitHub Discussions） |
 
 ### 代码改动记录
 
+- **2026-09-29（第十一轮：主域名切换）**
+  - `astro.config.mjs` 的 `site` 切换为 `https://moskie.vip`——canonical、sitemap、RSS、OG 分享链接、JSON-LD 全部指向新域名
+  - `scripts/indexnow.mjs` 的 `HOST` 同步为 `moskie.vip`（部署后自动推送给必应的地址随之更新）
+  - 老站 `mousiji.github.io` 保留为灾备线，其页面 canonical 指向新域名（权重归拢）；收录走「Bing / GSC 新增属性 + 验证 + 提交 sitemap」
 - **2026-09-28（第十轮：自有服务器部署）**
   - 新增 `deploy/` 目录：`nginx.conf`（moskie.vip 站点配置）、`setup.sh`（服务器一键初始化：装 nginx / 建目录 / 写配置 / 放行防火墙 / 启动）、`README.md`（首次部署、**换服务器 SOP**、加新域名方法）
   - CI 新增 `deploy-server` job：构建产物 rsync 到自有服务器（与 GitHub Pages 独立、互为灾备）；用到 3 个 Secrets：`SERVER_HOST` / `SERVER_USER` / `SERVER_SSH_KEY`

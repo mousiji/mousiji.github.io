@@ -1,4 +1,4 @@
-const HOST = 'mousiji.github.io';
+const HOST = 'moskie.vip';
 const KEY = '07fa94bbf68e17d1cef47d801f1f1c66';
 const BASE = `https://${HOST}`;
 
