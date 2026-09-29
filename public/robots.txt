@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mousiji.github.io/sitemap-index.xml
+Sitemap: https://moskie.vip/sitemap-index.xml

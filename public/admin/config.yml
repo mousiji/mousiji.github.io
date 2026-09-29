@@ -42,8 +42,8 @@ media_folder: "public/images"
 public_folder: "/images"
 
 # 站点信息
-site_url: https://mousiji.github.io
-display_url: https://mousiji.github.io
+site_url: https://moskie.vip
+display_url: https://moskie.vip
 logo_url: /images/avatar.png
 
 # 界面语言：简体中文（由 index.html 注册 zh_Hans 语言包）
