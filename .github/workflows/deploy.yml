@@ -35,6 +35,11 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      - name: Upload dist for server deploy
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
   deploy:
     environment:
       name: github-pages
@@ -58,3 +63,25 @@ jobs:
           node-version-file: .nvmrc
       - name: Submit URLs to IndexNow (Bing)
         run: node scripts/indexnow.mjs
+
+  # 自有服务器部署（moskie.vip → SERVER_HOST）：与 GitHub Pages 相互独立，互为灾备
+  deploy-server:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+      - name: Sync dist to server (rsync)
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_ed25519" \
+            dist/ "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/mousiji/"

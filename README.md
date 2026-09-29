@@ -63,7 +63,8 @@ astro-blog/
 │   │   └── hello-gridea.png
 │   └── favicon.ico
 ├── .github/workflows/
-│   └── deploy.yml             # GitHub Actions 自动部署配置（含类型检查）
+│   └── deploy.yml             # GitHub Actions 自动部署配置（类型检查 + Pages + 服务器 + IndexNow）
+├── deploy/                    # 🖥️ 自有服务器部署（nginx 配置 / 一键初始化脚本 / 操作手册）
 ├── astro.config.mjs           # Astro 配置
 ├── .nvmrc                     # Node 版本（本地与 CI 统一读它）
 ├── package.json
@@ -316,6 +317,10 @@ npm run preview
 
 ### 代码改动记录
 
+- **2026-09-28（第十轮：自有服务器部署）**
+  - 新增 `deploy/` 目录：`nginx.conf`（moskie.vip 站点配置）、`setup.sh`（服务器一键初始化：装 nginx / 建目录 / 写配置 / 放行防火墙 / 启动）、`README.md`（首次部署、**换服务器 SOP**、加新域名方法）
+  - CI 新增 `deploy-server` job：构建产物 rsync 到自有服务器（与 GitHub Pages 独立、互为灾备）；用到 3 个 Secrets：`SERVER_HOST` / `SERVER_USER` / `SERVER_SSH_KEY`
+  - 架构原则：**GitHub = 大脑，服务器 = 显示器**——服务器上只放可再生的静态文件，换机器零迁移
 - **2026-09-28（第九轮：工具区 + 结构优化，共 6 项）**
   - 新增 `/tools` 实用工具区：列表页 `/tools/` + 注册表 `src/lib/tools.ts`（**新工具 = 注册表加一条 + 建一个 `src/pages/tools/<slug>.astro`**）+ 首个工具「时区速查」`/tools/timezones/`（六大市场时间每秒刷新、自动标注工作/休息时间；已进 sitemap 和站内搜索）
   - 导航新增「工具」入口与 RSS 订阅图标

@@ -73,9 +73,10 @@ draft: false                    # true=草稿不发布
 
 ## 6. 部署与 CI
 
-- `.github/workflows/deploy.yml`：push 到 `main` → 构建 `npm run build` → 部署 GitHub Pages
-- 部署约需 2 分钟；验证线上生效可 curl `https://mousiji.github.io` 或查 GitHub Actions 状态
-- **推送限制**：本地 git 凭据可能无 `workflow` 权限——改 `.github/workflows/` 时可能被拒，需用户在 GitHub 网页端操作或换有权限的凭据
+- `.github/workflows/deploy.yml`：push 到 `main` → Type check → 构建 → **三个去向**：① GitHub Pages（`deploy` job）② 自有服务器 moskie.vip（`deploy-server` job，rsync dist 到 `SERVER_HOST:/var/www/mousiji`）③ IndexNow 通知必应。三者相互独立，任一失败不影响其他
+- 部署约需 2-3 分钟；验证：Actions 状态 / `curl https://mousiji.github.io` / `curl https://moskie.vip`
+- 服务器侧（初始化 / 换服务器 / 加新域名）全部见 **`deploy/README.md`**；GitHub Secrets：`SERVER_HOST`、`SERVER_USER`、`SERVER_SSH_KEY`（私钥在工作区 `deploy_key`，**不进仓库**）
+- ~~推送限制~~ **已解决**：gh 登录的 token 带 `workflow` 权限，`.github/workflows/` 可直接推
 
 ## 7. 变更记录（新 AI 必读）
 
@@ -95,6 +96,7 @@ draft: false                    # true=草稿不发布
   - **样式**：TOC / 相关文章 / 分页 / 归档 / 返回顶部 / 搜索页 / Pagefind 主题变量全部加在 `src/styles/global.css` 末尾，两份已同步
 - **2026-09-28（第八轮：代码健壮性，共 4 项）**：① 深色首屏白闪修复——主题初始化脚本从 body 末尾移入 `<head>`（渲染前执行），`theme-color` 随主题自动同步（MutationObserver 监听 `data-theme`，浅 `#ffffff` / 深 `#0f0f1a`）；② 草稿过滤收口到 `src/lib/posts.ts` 的 `getPublishedPosts()`（替换 7 个文件 8 处，内置按 pubDate 倒序）——**改草稿规则只改这一个文件**；③ 删除误上传的套娃目录 `public/images/public/`；④ 卡片图/头图补 `width`/`height` 减少布局跳动
 - **2026-09-28（第九轮：工具区 + 结构优化，共 6 项）**：① 新增 `/tools` 工具区——列表页 + 注册表 `src/lib/tools.ts`（新工具=注册表加一条+建一个 `src/pages/tools/<slug>.astro`）+ 首个工具「时区速查」`/tools/timezones/`（六大市场时间每秒刷新、标注工作/休息，已进 sitemap 与站内搜索）；② 导航加工具入口 + RSS 图标；③ **CSS 合并为一份**：删 `public/styles/global.css`，BaseLayout 改 `import '../styles/global.css'`（构建产 `/_assets/*.css`）——改样式只改 `src/styles/global.css`；④ **CI 类型检查**：`deploy.yml` 构建前跑 `npm run check`（astro check），修光暴露的 23 个类型错误；`tsconfig.json` 补 `exclude: ["dist","node_modules","public"]`（Astro 基础配置只排 dist，配合 allowJs 会把整个 node_modules 拉进检查 → 内存爆炸 OOM，这是坑）；⑤ Node 版本统一：`.nvmrc`(24) + CI `node-version-file` + `engines >=22`；⑥ 新增 `npm run check` 脚本与 devDeps `@astrojs/check`、`typescript`
+- **2026-09-28（第十轮：自有服务器部署 moskie.vip）**：新增 `deploy/`（`nginx.conf` 站点配置、`setup.sh` 服务器一键初始化、`README.md` 首次部署/换服务器/加域名手册）；`deploy.yml` 加 `deploy-server` job（build 产物 → rsync `--delete` 到 `SERVER_HOST:/var/www/mousiji`，与 GitHub Pages 独立互备）；GitHub Secrets 已配：`SERVER_HOST`/`SERVER_USER`/`SERVER_SSH_KEY`（私钥=工作区 `deploy_key`，不进仓库）；域名 **moskie.vip**（Dynadot 购入，免实名）A 记录 @/www → 38.55.96.205（香港机免备案），certbot 自动 HTTPS；**换服务器 = 新机跑 setup.sh + 改 SERVER_HOST 一个 Secret，零迁移**。设计原则：服务器无状态（只放可再生的 dist），一切资产在 GitHub
 
 ## 8. 坑与约定
 
